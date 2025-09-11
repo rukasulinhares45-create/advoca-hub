@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import LoginScreen from '@/components/LoginScreen';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Dashboard from '@/components/Dashboard';
 import Header from '@/components/Header';
 import ClientManagement from '@/components/ClientManagement';
 import SupabaseNotice from '@/components/SupabaseNotice';
+import { useAuth } from '@/hooks/useAuth';
 
-interface User {
-  username: string;
-  role: 'admin' | 'user';
-}
 
 interface Client {
   id: string;
@@ -94,44 +91,22 @@ const mockClients: Client[] = [
 ];
 
 const Index = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, profile, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>();
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
 
-  // Mock authentication - Em produção, isso seria integrado com Supabase
-  const handleLogin = async (username: string, password: string) => {
-    setLoginLoading(true);
-    setLoginError(null);
-
-    // Simular delay de rede
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Mock users - Em produção, isso viria do Supabase
-    const mockUsers = {
-      'admin': { password: 'admin123', role: 'admin' as const },
-      'user': { password: 'user123', role: 'user' as const },
-      'marcia': { password: 'marcia2024', role: 'admin' as const }
-    };
-
-    const mockUser = mockUsers[username as keyof typeof mockUsers];
-    
-    if (mockUser && mockUser.password === password) {
-      setUser({ username: username.toUpperCase(), role: mockUser.role });
-      setCurrentSection('dashboard');
-    } else {
-      setLoginError('Usuário ou senha inválidos');
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
     }
+  }, [user, loading, navigate]);
 
-    setLoginLoading(false);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    await signOut();
     setCurrentSection('dashboard');
     setSelectedClientId(undefined);
-    setLoginError(null);
+    navigate('/auth');
   };
 
   const handleNavigate = (section: string, clientId?: string) => {
@@ -147,20 +122,29 @@ const Index = () => {
     recentActivity: 12
   };
 
-  if (!user) {
+  if (loading) {
     return (
-      <LoginScreen
-        onLogin={handleLogin}
-        isLoading={loginLoading}
-        error={loginError}
-      />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <img
+            src="https://i.ibb.co/LzWD2mM/Logo-papel-timbrado-1.png"
+            alt="Márcia Suzana Advocacia"
+            className="h-20 mx-auto object-contain mb-4"
+          />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
     );
+  }
+
+  if (!user || !profile) {
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Header
-        user={user}
+        user={{ username: profile.username.toUpperCase(), role: profile.role }}
         onLogout={handleLogout}
         onNavigate={handleNavigate}
       />
@@ -168,7 +152,7 @@ const Index = () => {
       <main className="container mx-auto px-6 py-8">
         {currentSection === 'dashboard' && (
           <Dashboard
-            user={user}
+            user={{ username: profile.username.toUpperCase(), role: profile.role }}
             onNavigate={handleNavigate}
             stats={stats}
           />
@@ -176,7 +160,7 @@ const Index = () => {
         
         {currentSection === 'clients' && (
           <ClientManagement
-            user={user}
+            user={{ username: profile.username.toUpperCase(), role: profile.role }}
             onNavigate={handleNavigate}
             clients={mockClients}
           />
@@ -202,7 +186,7 @@ const Index = () => {
           </div>
         )}
 
-        {currentSection === 'settings' && user.role === 'admin' && (
+        {currentSection === 'settings' && profile.role === 'admin' && (
           <div className="space-y-6">
             <SupabaseNotice />
             <div className="text-center py-12">
