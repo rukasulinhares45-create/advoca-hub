@@ -17,7 +17,6 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, username: string, role?: 'admin' | 'user') => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
 }
@@ -90,26 +89,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, username: string, role: 'admin' | 'user' = 'user') => {
-    try {
-      const redirectUrl = `${window.location.origin}/`;
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            username: username.toLowerCase(),
-            role
-          }
-        }
-      });
-      return { error };
-    } catch (error) {
-      return { error: error as Error };
-    }
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
   };
@@ -139,7 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profile,
     loading,
     signIn,
-    signUp,
     signOut,
     updateProfile,
   };
