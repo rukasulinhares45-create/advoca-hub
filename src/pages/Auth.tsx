@@ -24,9 +24,7 @@ export default function Auth() {
     
     setLoading(true);
     
-    // Convert username to email format for Supabase
-    const email = `${username.toLowerCase().trim()}@adv.local`;
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(username.toLowerCase().trim(), password);
     
     if (error) {
       toast({
