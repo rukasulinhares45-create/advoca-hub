@@ -24,7 +24,8 @@ export default function Auth() {
     
     setLoading(true);
     
-    const { error } = await signIn(username.toLowerCase().trim(), password);
+    const email = `${username.toLowerCase().trim()}@gmail.com`;
+    const { error } = await signIn(email, password);
     
     if (error) {
       toast({
@@ -65,14 +66,14 @@ export default function Auth() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Email</label>
+                <label className="text-sm font-medium text-foreground">Usuário</label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="email"
+                    type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                    placeholder="Digite seu email"
+                    placeholder="Digite seu usuário"
                     className="pl-10"
                     required
                   />
