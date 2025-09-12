@@ -65,14 +65,14 @@ export default function Auth() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Usuário</label>
+                <label className="text-sm font-medium text-foreground">Email</label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="text"
+                    type="email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                    placeholder="Digite seu usuário"
+                    placeholder="Digite seu email"
                     className="pl-10"
                     required
                   />
