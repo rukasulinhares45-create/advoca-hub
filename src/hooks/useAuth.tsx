@@ -39,11 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user) {
           // Fetch user profile
           setTimeout(async () => {
-            const { data: profile } = await supabase
+            console.log('Tentando carregar perfil para:', session.user.id);
+            const { data: profile, error } = await supabase
               .from('profiles')
               .select('*')
               .eq('user_id', session.user.id)
-              .single();
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Erro ao carregar perfil:', error);
+            } else {
+              console.log('Perfil carregado:', profile);
+            }
             setProfile(profile);
             setLoading(false);
           }, 0);
@@ -61,11 +68,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (session?.user) {
         setTimeout(async () => {
-          const { data: profile } = await supabase
+          console.log('Carregando perfil existente para:', session.user.id);
+          const { data: profile, error } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Erro ao carregar perfil existente:', error);
+          } else {
+            console.log('Perfil existente carregado:', profile);
+          }
           setProfile(profile);
           setLoading(false);
         }, 0);
