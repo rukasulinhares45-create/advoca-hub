@@ -158,13 +158,6 @@ export type Database = {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "client_summary"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "documents_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -199,28 +192,29 @@ export type Database = {
       }
     }
     Views: {
-      client_summary: {
-        Row: {
-          activity: string | null
-          address: Json | null
-          created_at: string | null
-          created_by: string | null
-          document: string | null
-          document_count: number | null
-          email: string | null
-          id: string | null
-          last_document_date: string | null
-          name: string | null
-          occupation: string | null
-          pending_documents: number | null
-          phone: string | null
-          type: Database["public"]["Enums"]["client_type"] | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_client_summary: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          activity: string
+          address: Json
+          created_at: string
+          created_by: string
+          document: string
+          document_count: number
+          email: string
+          id: string
+          last_document_date: string
+          name: string
+          occupation: string
+          pending_documents: number
+          phone: string
+          type: Database["public"]["Enums"]["client_type"]
+          updated_at: string
+        }[]
+      }
       get_user_stats: {
         Args: { user_uuid?: string }
         Returns: {
