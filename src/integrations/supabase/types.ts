@@ -14,6 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: Database["public"]["Enums"]["audit_action"]
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string
+          table_name: string
+          user_agent: string | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["audit_action"]
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id: string
+          table_name: string
+          user_agent?: string | null
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["audit_action"]
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string
+          table_name?: string
+          user_agent?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      clients: {
+        Row: {
+          activity: string | null
+          address: Json
+          created_at: string
+          created_by: string
+          document: string
+          email: string
+          id: string
+          name: string
+          occupation: string | null
+          phone: string
+          type: Database["public"]["Enums"]["client_type"]
+          updated_at: string
+        }
+        Insert: {
+          activity?: string | null
+          address?: Json
+          created_at?: string
+          created_by: string
+          document: string
+          email: string
+          id?: string
+          name: string
+          occupation?: string | null
+          phone: string
+          type: Database["public"]["Enums"]["client_type"]
+          updated_at?: string
+        }
+        Update: {
+          activity?: string | null
+          address?: Json
+          created_at?: string
+          created_by?: string
+          document?: string
+          email?: string
+          id?: string
+          name?: string
+          occupation?: string | null
+          phone?: string
+          type?: Database["public"]["Enums"]["client_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          file_type: string | null
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -43,15 +199,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      client_summary: {
+        Row: {
+          activity: string | null
+          address: Json | null
+          created_at: string | null
+          created_by: string | null
+          document: string | null
+          document_count: number | null
+          email: string | null
+          id: string | null
+          last_document_date: string | null
+          name: string | null
+          occupation: string | null
+          pending_documents: number | null
+          phone: string | null
+          type: Database["public"]["Enums"]["client_type"] | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      get_user_stats: {
+        Args: { user_uuid?: string }
+        Returns: {
+          pending_documents: number
+          recent_activity: number
+          total_clients: number
+          total_documents: number
+        }[]
+      }
       is_admin: {
         Args: { uid: string }
         Returns: boolean
       }
     }
     Enums: {
+      audit_action: "CREATE" | "UPDATE" | "DELETE" | "VIEW" | "DOWNLOAD"
+      client_type: "PF" | "PJ"
+      document_status: "pending" | "review" | "approved" | "rejected"
       user_role: "admin" | "user"
     }
     CompositeTypes: {
@@ -180,6 +367,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      audit_action: ["CREATE", "UPDATE", "DELETE", "VIEW", "DOWNLOAD"],
+      client_type: ["PF", "PJ"],
+      document_status: ["pending", "review", "approved", "rejected"],
       user_role: ["admin", "user"],
     },
   },
