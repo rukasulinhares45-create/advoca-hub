@@ -6,6 +6,7 @@ import ClientManagement from '@/components/ClientManagement';
 import ClientForm from '@/components/ClientForm';
 import ClientDetails from '@/components/ClientDetails';
 import DocumentManagement from '@/components/DocumentManagement';
+import DocumentForm from '@/components/DocumentForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useClients } from '@/hooks/useClients';
 import { useStats } from '@/hooks/useStats';
@@ -119,6 +120,20 @@ const Index = () => {
             user={{ username: profile.username.toUpperCase(), role: profile.role }}
             onNavigate={handleNavigate}
             clientId={selectedClientId}
+          />
+        )}
+
+        {currentSection === 'new-document' && (
+          <DocumentForm
+            onNavigate={handleNavigate}
+            clientId={selectedClientId}
+          />
+        )}
+
+        {currentSection === 'edit-document' && selectedClientId && (
+          <DocumentForm
+            documentId={selectedClientId}
+            onNavigate={handleNavigate}
           />
         )}
 
