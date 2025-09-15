@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, Settings, User, Shield } from 'lucide-react';
+import { LogOut, Settings, User, Shield, FileText, Users, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -39,6 +39,34 @@ export default function Header({ user, onLogout, onNavigate }: HeaderProps) {
           </div>
         </div>
 
+        {/* Navigation */}
+        <nav className="hidden lg:flex items-center gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate('dashboard')}
+            className="gap-2"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Dashboard
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate('clients')}
+            className="gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Clientes
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate('documents')}
+            className="gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Documentos
+          </Button>
+        </nav>
+
         {/* User Menu */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 text-sm">
@@ -66,16 +94,32 @@ export default function Header({ user, onLogout, onNavigate }: HeaderProps) {
               </div>
               <DropdownMenuSeparator />
               
+              <DropdownMenuItem onClick={() => onNavigate('dashboard')}>
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Dashboard
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => onNavigate('clients')}>
+                <Users className="mr-2 h-4 w-4" />
+                Clientes
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => onNavigate('documents')}>
+                <FileText className="mr-2 h-4 w-4" />
+                Documentos
+              </DropdownMenuItem>
+              
               {isAdmin && (
                 <>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => onNavigate('settings')}>
                     <Settings className="mr-2 h-4 w-4" />
                     Configurações
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                 </>
               )}
               
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sair

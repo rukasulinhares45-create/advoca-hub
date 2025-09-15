@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useClients } from '@/hooks/useClients';
+import { toast } from '@/hooks/use-toast';
 
 interface Client {
   id: string;
@@ -36,6 +39,8 @@ interface ClientManagementProps {
 export default function ClientManagement({ user, onNavigate, clients }: ClientManagementProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredClients, setFilteredClients] = useState(clients);
+  const [deletingClient, setDeletingClient] = useState<string | null>(null);
+  const { deleteClient } = useClients();
 
   React.useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -49,6 +54,29 @@ export default function ClientManagement({ user, onNavigate, clients }: ClientMa
       setFilteredClients(filtered);
     }
   }, [searchTerm, clients]);
+
+  const handleDeleteClient = async (clientId: string, clientName: string) => {
+    setDeletingClient(clientId);
+    
+    try {
+      const success = await deleteClient(clientId);
+      
+      if (success) {
+        toast({
+          title: "Cliente removido",
+          description: `${clientName} foi removido do sistema com sucesso.`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível remover o cliente. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingClient(null);
+    }
+  };
 
   const formatDocument = (document: string, type: 'PF' | 'PJ') => {
     if (type === 'PF') {
@@ -207,13 +235,37 @@ export default function ClientManagement({ user, onNavigate, clients }: ClientMa
                     <Edit className="h-4 w-4" />
                   </Button>
                   {isAdmin && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive hover:text-destructive"
+                          disabled={deletingClient === client.id}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir o cliente "{client.name}"? 
+                            Esta ação não pode ser desfeita e todos os documentos associados também serão removidos.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteClient(client.id, client.name)}
+                            disabled={deletingClient === client.id}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {deletingClient === client.id ? 'Excluindo...' : 'Excluir Cliente'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   )}
                 </div>
               </div>

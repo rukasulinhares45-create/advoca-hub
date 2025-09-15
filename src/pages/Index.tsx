@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Dashboard from '@/components/Dashboard';
 import Header from '@/components/Header';
 import ClientManagement from '@/components/ClientManagement';
+import ClientForm from '@/components/ClientForm';
+import ClientDetails from '@/components/ClientDetails';
+import DocumentManagement from '@/components/DocumentManagement';
 import { useAuth } from '@/hooks/useAuth';
 import { useClients } from '@/hooks/useClients';
 import { useStats } from '@/hooks/useStats';
@@ -89,22 +92,34 @@ const Index = () => {
         )}
 
         {currentSection === 'new-client' && (
-          <div className="space-y-6">
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                Cadastro de Cliente
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Funcionalidade de cadastro integrada com Supabase está pronta!
-              </p>
-              <button 
-                onClick={() => handleNavigate('clients')}
-                className="text-primary hover:underline"
-              >
-                Voltar para lista de clientes
-              </button>
-            </div>
-          </div>
+          <ClientForm onNavigate={handleNavigate} />
+        )}
+
+        {currentSection === 'edit-client' && selectedClientId && (
+          <ClientForm clientId={selectedClientId} onNavigate={handleNavigate} />
+        )}
+
+        {currentSection === 'client-details' && selectedClientId && (
+          <ClientDetails
+            clientId={selectedClientId}
+            user={{ username: profile.username.toUpperCase(), role: profile.role }}
+            onNavigate={handleNavigate}
+          />
+        )}
+
+        {currentSection === 'documents' && (
+          <DocumentManagement
+            user={{ username: profile.username.toUpperCase(), role: profile.role }}
+            onNavigate={handleNavigate}
+          />
+        )}
+
+        {currentSection === 'client-documents' && selectedClientId && (
+          <DocumentManagement
+            user={{ username: profile.username.toUpperCase(), role: profile.role }}
+            onNavigate={handleNavigate}
+            clientId={selectedClientId}
+          />
         )}
 
         {currentSection === 'settings' && profile.role === 'admin' && (
