@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Clock, BarChart3, Shield } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Dashboard from '@/components/Dashboard';
 import Header from '@/components/Header';
 import ClientManagement from '@/components/ClientManagement';
@@ -7,6 +10,8 @@ import ClientForm from '@/components/ClientForm';
 import ClientDetails from '@/components/ClientDetails';
 import DocumentManagement from '@/components/DocumentManagement';
 import DocumentForm from '@/components/DocumentForm';
+import ActivityLog from '@/components/ActivityLog';
+import Reports from '@/components/Reports';
 import { useAuth } from '@/hooks/useAuth';
 import { useClients } from '@/hooks/useClients';
 import { useStats } from '@/hooks/useStats';
@@ -137,21 +142,76 @@ const Index = () => {
           />
         )}
 
+        {currentSection === 'activity' && (
+          <ActivityLog onNavigate={handleNavigate} />
+        )}
+
+        {currentSection === 'reports' && (
+          <Reports onNavigate={handleNavigate} />
+        )}
+
         {currentSection === 'settings' && profile.role === 'admin' && (
           <div className="space-y-6">
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                Configurações do Sistema
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Sistema integrado com Supabase. Configurações administrativas disponíveis.
-              </p>
-              <button 
+            <div className="flex items-center gap-4 mb-8">
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => handleNavigate('dashboard')}
-                className="text-primary hover:underline"
               >
-                Voltar ao dashboard
-              </button>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">
+                  Configurações do Sistema
+                </h2>
+                <p className="text-muted-foreground">
+                  Configurações administrativas do sistema
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="cursor-pointer hover:shadow-elevated transition-shadow" onClick={() => handleNavigate('activity')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    Log de Atividades
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Visualizar histórico de alterações no sistema
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-elevated transition-shadow" onClick={() => handleNavigate('reports')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-success" />
+                    Relatórios
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Análises e estatísticas do sistema
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-elevated transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-accent" />
+                    Permissões
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Gerenciar usuários e permissões
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}

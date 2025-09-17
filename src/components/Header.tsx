@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, Settings, User, Shield, FileText, Users, BarChart3 } from 'lucide-react';
+import { LogOut, Settings, User, Shield, FileText, Users, BarChart3, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -65,6 +65,14 @@ export default function Header({ user, onLogout, onNavigate }: HeaderProps) {
             <FileText className="h-4 w-4" />
             Documentos
           </Button>
+          <Button
+            variant="ghost"
+            onClick={() => onNavigate('reports')}
+            className="gap-2"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Relatórios
+          </Button>
         </nav>
 
         {/* User Menu */}
@@ -107,6 +115,16 @@ export default function Header({ user, onLogout, onNavigate }: HeaderProps) {
               <DropdownMenuItem onClick={() => onNavigate('documents')}>
                 <FileText className="mr-2 h-4 w-4" />
                 Documentos
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => onNavigate('reports')}>
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Relatórios
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => onNavigate('activity')}>
+                <Clock className="mr-2 h-4 w-4" />
+                Atividades
               </DropdownMenuItem>
               
               {isAdmin && (
