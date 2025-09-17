@@ -17,7 +17,7 @@ interface ClientDetailsProps {
 
 export default function ClientDetails({ clientId, user, onNavigate }: ClientDetailsProps) {
   const { clients, deleteClient } = useClients();
-  const { documents } = useDocuments();
+  const { documents, downloadDocument } = useDocuments();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const client = clients.find(c => c.id === clientId);
@@ -254,7 +254,12 @@ export default function ClientDetails({ clientId, user, onNavigate }: ClientDeta
                            'Pendente'}
                         </Badge>
                         {doc.file_path && (
-                          <Button size="sm" variant="ghost">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => downloadDocument(doc)}
+                            title="Baixar documento"
+                          >
                             <Download className="h-4 w-4" />
                           </Button>
                         )}
@@ -262,7 +267,11 @@ export default function ClientDetails({ clientId, user, onNavigate }: ClientDeta
                     </div>
                   ))}
                   {clientDocuments.length > 5 && (
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => onNavigate('client-documents', clientId)}
+                    >
                       Ver todos os documentos ({clientDocuments.length})
                     </Button>
                   )}
@@ -274,7 +283,7 @@ export default function ClientDetails({ clientId, user, onNavigate }: ClientDeta
                   <p className="text-muted-foreground mb-4">
                     Este cliente ainda não possui documentos cadastrados
                   </p>
-                  <Button>
+                  <Button onClick={() => onNavigate('new-document', clientId)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Adicionar Documento
                   </Button>
@@ -349,15 +358,32 @@ export default function ClientDetails({ clientId, user, onNavigate }: ClientDeta
               <CardTitle>Ações Rápidas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => onNavigate('new-document', clientId)}
+              >
                 <Upload className="h-4 w-4 mr-2" />
                 Adicionar Documento
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => onNavigate('client-documents', clientId)}
+              >
                 <FileText className="h-4 w-4 mr-2" />
-                Gerar Relatório
+                Ver Documentos
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => {
+                  toast({
+                    title: "Funcionalidade em desenvolvimento",
+                    description: "A função de enviar email será implementada em breve.",
+                  });
+                }}
+              >
                 <Mail className="h-4 w-4 mr-2" />
                 Enviar Email
               </Button>
