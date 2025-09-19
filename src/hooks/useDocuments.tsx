@@ -147,7 +147,11 @@ export const useDocuments = (clientId?: string) => {
     if (!user) return null;
 
     try {
-      const updates: any = { 
+      const updates: { 
+        status: Document['status']; 
+        reviewed_at: string; 
+        reviewed_by?: string; 
+      } = { 
         status,
         reviewed_at: new Date().toISOString()
       };

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useDocuments } from '@/hooks/useDocuments';
 import { useClients } from '@/hooks/useClients';
+import { useToast } from '@/hooks/use-toast';
 
 interface DocumentManagementProps {
   user: { username: string; role: 'admin' | 'user' };
@@ -15,8 +16,9 @@ interface DocumentManagementProps {
 }
 
 export default function DocumentManagement({ user, onNavigate, clientId }: DocumentManagementProps) {
-  const { documents } = useDocuments();
+  const { documents, downloadDocument, deleteDocument } = useDocuments();
   const { clients } = useClients();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -238,6 +240,8 @@ export default function DocumentManagement({ user, onNavigate, clientId }: Docum
                         <Button
                           size="sm"
                           variant="ghost"
+                          onClick={() => downloadDocument(doc)}
+                          title="Baixar documento"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
@@ -256,6 +260,18 @@ export default function DocumentManagement({ user, onNavigate, clientId }: Docum
                           size="sm"
                           variant="ghost"
                           className="text-destructive hover:text-destructive"
+                          onClick={async () => {
+                            if (confirm('Tem certeza que deseja deletar este documento?')) {
+                              const success = await deleteDocument(doc.id);
+                              if (success) {
+                                toast({
+                                  title: "Documento removido",
+                                  description: "O documento foi removido com sucesso.",
+                                });
+                              }
+                            }
+                          }}
+                          title="Deletar documento"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

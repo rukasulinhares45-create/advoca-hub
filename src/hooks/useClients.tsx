@@ -117,8 +117,8 @@ export const useClients = () => {
 
     try {
       // Transform address if it exists in updates
-      const transformedUpdates: any = { ...updates };
-      if (updates.address) {
+      const transformedUpdates: Record<string, any> = { ...updates };
+      if (updates.address && typeof updates.address === 'object') {
         transformedUpdates.address = JSON.stringify(updates.address);
       }
 

@@ -38,22 +38,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           // Fetch user profile
-          setTimeout(async () => {
-            console.log('Tentando carregar perfil para:', session.user.id);
-            const { data: profile, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .maybeSingle();
-            
-            if (error) {
-              console.error('Erro ao carregar perfil:', error);
-            } else {
-              console.log('Perfil carregado:', profile);
+          const loadProfile = async () => {
+            try {
+              const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+              
+              if (error) {
+                console.error('Erro ao carregar perfil:', error);
+              }
+              setProfile(profile);
+            } catch (error) {
+              console.error('Erro inesperado ao carregar perfil:', error);
+            } finally {
+              setLoading(false);
             }
-            setProfile(profile);
-            setLoading(false);
-          }, 0);
+          };
+          
+          loadProfile();
         } else {
           setProfile(null);
           setLoading(false);
@@ -62,13 +66,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        setTimeout(async () => {
-          console.log('Carregando perfil existente para:', session.user.id);
+    const loadInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
           const { data: profile, error } = await supabase
             .from('profiles')
             .select('*')
@@ -77,16 +81,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (error) {
             console.error('Erro ao carregar perfil existente:', error);
-          } else {
-            console.log('Perfil existente carregado:', profile);
           }
           setProfile(profile);
-          setLoading(false);
-        }, 0);
-      } else {
+        }
+      } catch (error) {
+        console.error('Erro ao carregar sessão inicial:', error);
+      } finally {
         setLoading(false);
       }
-    });
+    };
+
+    loadInitialSession();
 
     return () => subscription.unsubscribe();
   }, []);
